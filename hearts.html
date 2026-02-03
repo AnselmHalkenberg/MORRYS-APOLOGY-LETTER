@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinite Hearts Background</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #2c3e50; /* Same dark blue as your letter */
+            overflow: hidden; /* Important: prevents scrollbars */
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .heart {
+            position: absolute;
+            background-color: #e74c3c; /* Red color */
+            display: inline-block;
+            height: 30px;
+            margin: 0 10px;
+            top: 0;
+            transform: rotate(-45deg);
+            width: 30px;
+            /* Start below the screen */
+            bottom: -100px; 
+            opacity: 0;
+            pointer-events: none; /* Allows clicking through hearts */
+        }
+
+        /* The round parts of the heart */
+        .heart:before,
+        .heart:after {
+            content: "";
+            background-color: #e74c3c;
+            border-radius: 50%;
+            height: 30px;
+            position: absolute;
+            width: 30px;
+        }
+
+        .heart:before {
+            top: -15px;
+            left: 0;
+        }
+
+        .heart:after {
+            left: 15px;
+            top: 0;
+        }
+
+        /* The Floating Animation */
+        @keyframes floatUp {
+            0% {
+                transform: translateY(110vh) rotate(-45deg) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(90vh) rotate(-45deg) scale(1);
+            }
+            100% {
+                transform: translateY(-10vh) rotate(-45deg) scale(1);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <script>
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            
+            // Randomize position (left/right)
+            heart.style.left = Math.random() * 100 + "vw";
+            
+            // Randomize animation duration (speed)
+            // Between 3s and 6s
+            heart.style.animationDuration = Math.random() * 3 + 3 + "s";
+            
+            // Apply the animation
+            heart.style.animationName = 'floatUp';
+            
+            // Randomize opacity slightly for depth
+            heart.style.opacity = Math.random();
+
+            // Randomize size slightly
+            const size = Math.random() * 0.5 + 0.5; // Scale between 0.5 and 1
+            // We use a CSS variable or transform scale for this, 
+            // but simply changing width/height via zoom is easier here:
+            heart.style.zoom = size;
+
+            document.body.appendChild(heart);
+
+            // Remove the heart from the DOM after animation ends to prevent memory leaks
+            setTimeout(() => {
+                heart.remove();
+            }, 6000); // Should match max animation duration
+        }
+
+        // Create a new heart every 300 milliseconds
+        setInterval(createHeart, 300);
+    </script>
+
+</body>
+</html>
