@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Letter</title>
+    <style>
+        /* --- General Page Styling --- */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #2c3e50; /* Dark background to make the letter pop */
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            overflow: hidden; /* Prevents scrolling before letter is open */
+        }
+
+        /* --- The Envelope Container --- */
+        .envelope-wrapper {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.5s;
+        }
+
+        /* The Envelope Body */
+        .envelope {
+            width: 300px;
+            height: 200px;
+            background-color: #c0392b; /* Reddish envelope color */
+            position: relative;
+            border-radius: 5px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* The Envelope Flap (Triangle) */
+        .envelope::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 100px solid #e74c3c; /* Lighter red for the flap */
+            transform-origin: top;
+            transition: transform 0.6s ease-in-out;
+            z-index: 11;
+        }
+
+        /* The "Open" Button (Styled like a Wax Seal) */
+        .open-btn {
+            z-index: 12;
+            background: #f1c40f;
+            color: #c0392b;
+            border: 2px solid #d35400;
+            padding: 10px 20px;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .open-btn:hover {
+            transform: scale(1.1);
+            background: #fff;
+        }
+
+        /* --- The Letter Content --- */
+        .letter-content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0); /* Hidden initially */
+            width: 90%;
+            max-width: 600px;
+            height: 80vh;
+            background-color: #fdfbf7; /* Parchment color */
+            padding: 40px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            overflow-y: auto; /* Allows scrolling */
+            opacity: 0;
+            transition: all 0.8s ease-in-out;
+            border-radius: 2px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Paper Texture Effect */
+        .letter-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 40px;
+            bottom: 0;
+            width: 2px;
+            background: rgba(255, 0, 0, 0.1); /* Margin line */
+        }
+
+        .page {
+            min-height: 400px;
+            border: 1px dashed #ccc; /* Visual separation for "blank pages" */
+            padding: 20px;
+            position: relative;
+        }
+        
+        .page-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ddd;
+            font-size: 2rem;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        /* --- Action Buttons --- */
+        .action-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+            padding-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-family: inherit;
+        }
+
+        .btn-decline {
+            background-color: #7f8c8d;
+            color: white;
+        }
+        .btn-decline:hover { background-color: #95a5a6; }
+
+        .btn-accept {
+            background-color: #27ae60;
+            color: white;
+        }
+        .btn-accept:hover { background-color: #2ecc71; }
+
+        /* --- Animation States --- */
+        
+        /* 1. Open the flap */
+        .envelope-wrapper.open .envelope::before {
+            transform: rotateX(180deg);
+            z-index: 0; /* Flap goes behind the letter */
+        }
+
+        /* 2. Fade out the envelope button */
+        .envelope-wrapper.open .open-btn {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* 3. Reveal the letter */
+        .letter-content.visible {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            z-index: 100;
+        }
+        
+        /* 4. Hide the envelope after animation */
+        .envelope-wrapper.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="envelope-wrapper" id="envelopeWrapper">
+        <div class="envelope">
+            <button class="open-btn" onclick="openLetter()">Mở Lá Thư</button>
+        </div>
+    </div>
+
+    <div class="letter-content" id="letterContent">
+        
+        <h2>Lời Nói Dành Cho Minh-Thư</h2>
+        
+      
+        <div class="page">
+            <span class="page-label"></span>
+            <p>
+                (Nếu Bạn Đọc được cái lá thư này , hãy nhắn cho mình một chữ)
+                <br>
+                Lí do mình viết lá thư điện tử này Là để giúp mình nói những thứ để không làm cho bạn hiểu lầm hay nghĩ sai về mình . Bạn biết không ? Mình luôn hạnh phúc khi mình có bạn . Bạn là một báu vật thực sự trong cuộc đời mình , và mình sẽ không bao giờ lãng quên bạn kể cả trong những lúc mình không còn nhìn thấy bạn nữa , bạn hiện lên trong tâm trí mình như một viên kim cương quý nhất trong đại dương trái tim mình . Dù dành cả cuộc đời bên cạnh bạn cũng không đủ để mình diễn tả hết tình yêu của mình dành cho bạn . Mình biết rằng dù chúng ta phải đối mặt với bao nhiêu thử thách trong tương lai, chúng ta sẽ cùng nhau vượt qua, sát cánh bên nhau. Cuối cùng , coi như đây là một món quà sớm cho lễ hội sắp tới . Chúc bạn luôn vui vẻ và mối quan hệ chúng ta luôn được bền vững nhé ❤️‍🔥
+            </p>
+        </div>
+
+    
+    </div>
+
+    <script>
+        function openLetter() {
+            const envelope = document.getElementById('envelopeWrapper');
+            const letter = document.getElementById('letterContent');
+            const body = document.body;
+
+         
+            envelope.classList.add('open');
+
+          
+            setTimeout(() => {
+                envelope.classList.add('hidden'); 
+                letter.classList.add('visible');  
+                body.style.overflow = 'auto';     
+            }, 600);
+        }
+
+        
+    </script>
+
+
+ <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #2c3e50; 
+            overflow: hidden; 
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .heart {
+            position: absolute;
+            background-color: #e74c3c;
+            display: inline-block;
+            height: 30px;
+            margin: 0 10px;
+            top: 0;
+            transform: rotate(-45deg);
+            width: 30px;
+            
+            bottom: -100px; 
+            opacity: 0;
+            pointer-events: none; 
+        }
+
+        .heart:before,
+        .heart:after {
+            content: "";
+            background-color: #e74c3c;
+            border-radius: 50%;
+            height: 30px;
+            position: absolute;
+            width: 30px;
+        }
+
+        .heart:before {
+            top: -15px;
+            left: 0;
+        }
+
+        .heart:after {
+            left: 15px;
+            top: 0;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(110vh) rotate(-45deg) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(90vh) rotate(-45deg) scale(1);
+            }
+            100% {
+                transform: translateY(-10vh) rotate(-45deg) scale(1);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <script>
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            
+           
+            heart.style.left = Math.random() * 100 + "vw";
+            
+          
+            heart.style.animationDuration = Math.random() * 3 + 3 + "s";
+            
+            
+            heart.style.animationName = 'floatUp';
+            
+           
+            heart.style.opacity = Math.random();
+
+          
+            const size = Math.random() * 0.5 + 0.5; 
+            heart.style.zoom = size;
+
+            document.body.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 6000); 
+        }
+
+    
+        setInterval(createHeart, 300);
+    </script>
+
+
+</body>
+</html>
